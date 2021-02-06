@@ -1,5 +1,6 @@
-var express= require("express");
-var app= express();
+const express= require("express");
+const app= express();
+const mongoose = require("mongoose");
 
 const users = [];
 app.set("view engine","ejs") ;
@@ -12,6 +13,19 @@ app.get("/",(req,res)=>{
     res.render("home");
 });
 
+//
+
+const url = process.env.DATABASEURL || "mongodb://localhost:27017/feedbackAnalyzer";
+// Mongodb Atlas Setup (Cloud)
+mongoose.connect(url,
+{ useNewUrlParser: true, useUnifiedTopology: true 
+}).then( ()=>{
+    console.log(url);
+    console.log("Connected to DB!");
+}).catch( err=>{
+    console.log("Error :",err.message);
+});
+
 //AUTH ROUTES
 //=========================
 // SHOW REGISTER FORM
@@ -20,7 +34,7 @@ app.get("/register",(req,res)=>{
 });
 
 app.post("/register",(req,res)=>{
-    req.body.email
+    console.log(req.body);
 })
 
 // //show login form
