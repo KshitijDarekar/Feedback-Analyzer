@@ -28,8 +28,11 @@ mongoose.connect(url,
 
 //UserSchema
 const UserSchema = new mongoose.Schema({
-    username : String,
-    password : String
+    username : { type:String , required:[true,'Username cannot be blank'] , unique:true},
+    password : { type:String ,required:true },
+    email : { type:String ,required:true , unique:true},
+    type : { type:String ,},
+    
 });
 const User= mongoose.model("User",UserSchema);
 // const check = new User({username:"Kshitij",password:"123"});
@@ -46,7 +49,12 @@ app.post("/register",async (req,res)=>{
     console.log(req.body);
     try{
         const hash = await bcrypt.hash(req.body.password,12);
-        const newUser = new User({username:req.body.username,password:hash} );
+        const newUser = new User({
+            username:req.body.username,
+            password:hash,
+            email:req.body.email,
+            type:req.body.type,
+        } );
         newUser.save();
         console.log(req.body);
         res.send(req.body);
