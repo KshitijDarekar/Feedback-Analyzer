@@ -2,13 +2,19 @@ const express= require("express");
 const app= express();
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const users = [];
 app.set("view engine","ejs") ;
 
 app.use(express.urlencoded({extended : false}))
 app.use(express.static(__dirname+"/public"));
-
+app.use(session({
+  secret: 'Kshitij was here !',
+  resave: false,
+  saveUninitialized: false,
+  // cookie: { secure: true }
+}))
 
 app.get("/",(req,res)=>{
     res.render("home");
@@ -55,7 +61,8 @@ app.post("/register",async (req,res)=>{
             email:req.body.email,
             type:req.body.type,
         } );
-        newUser.save();
+        await newUser.save();
+        req.session.user_id=newUser._id;
         console.log(req.body);
         res.send(req.body);
     }catch (error) {
@@ -112,7 +119,9 @@ app.post("/login", async (req, res) => {
         const cmp = await bcrypt.compare(req.body.password, user.password);
         if (cmp) {
           //   ..... further code to maintain authentication like jwt or sessions
+          req.session.user_id=user._id;
           res.send("Auth Successful");
+          //res.redirect("/secret");
         } else {
           res.send("Wrong username or password.");
         }
@@ -125,6 +134,15 @@ app.post("/login", async (req, res) => {
     }
   });
 
+  app.get("/secret",(req,res)=>{
+    if(!req.session.user_id){
+      res.redirect("/login");
+    }
+    else{
+      res.send("This is the  secret page , you cannot see unless you are logged in !");
+    }
+    
+  })
 const port = process.env.PORT || 3000;
 const ip = process.env.IP || "0.0.0.0";
 app.listen(port,ip ,()=>{
