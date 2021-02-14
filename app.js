@@ -44,6 +44,14 @@ const User= mongoose.model("User",UserSchema);
 // const check = new User({username:"Kshitij",password:"123"});
 // check.save();
 
+//Middleware
+const requirelogin =(req,res,next)=>{
+  if(!req.session.user_id){
+    return res.redirect("/login");
+  }
+  next();
+}
+
 //AUTH ROUTES
 //=========================
 // SHOW REGISTER FORM
@@ -134,14 +142,15 @@ app.post("/login", async (req, res) => {
     }
   });
 
-  app.get("/secret",(req,res)=>{
-    if(!req.session.user_id){
-      res.redirect("/login");
-    }
-    else{
-      //res.send("This is the  secret page , you cannot see unless you are logged in !");
-      res.render('secret');
-    }
+  app.get("/secret",requirelogin,(req,res)=>{
+    // if(!req.session.user_id){
+    //   res.redirect("/login");
+    // }
+    // else{
+    //   //res.send("This is the  secret page , you cannot see unless you are logged in !");
+    //   res.render('secret');
+    // }
+    res.render('secret');
     
   })
 
