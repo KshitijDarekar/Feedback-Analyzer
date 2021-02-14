@@ -120,8 +120,8 @@ app.post("/login", async (req, res) => {
         if (cmp) {
           //   ..... further code to maintain authentication like jwt or sessions
           req.session.user_id=user._id;
-          res.send("Auth Successful");
-          //res.redirect("/secret");
+          //res.send("Auth Successful");
+          res.redirect("/secret");
         } else {
           res.send("Wrong username or password.");
         }
@@ -139,9 +139,15 @@ app.post("/login", async (req, res) => {
       res.redirect("/login");
     }
     else{
-      res.send("This is the  secret page , you cannot see unless you are logged in !");
+      //res.send("This is the  secret page , you cannot see unless you are logged in !");
+      res.render('secret');
     }
     
+  })
+
+  app.post("/logout",(req,res)=>{
+    req.session.destroy();
+    res.redirect("/login");
   })
 const port = process.env.PORT || 3000;
 const ip = process.env.IP || "0.0.0.0";
